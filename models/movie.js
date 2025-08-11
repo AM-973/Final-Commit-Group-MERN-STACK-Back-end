@@ -1,12 +1,12 @@
 const mongoose = require('mongoose')
 
-const commentSchema = new mongoose.Schema(
+const reviewSchema = new mongoose.Schema(
   {
-    text: {
+    comment: {
       type: String,
       required: true
     },
-    author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
   },
   { timestamps: true }
 )
@@ -17,17 +17,27 @@ const movieSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    text: {
-      type: String,
+    description: {
+      type: Object,
       required: true,
+    },
+    creationDate: {
+      type: Date,
+      default: Date.now,
+    },
+    owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    currentSeats: {
+      type: Object,
+    },
+    rating: {
+      type: String,
     },
     category: {
       type: String,
       required: true,
-      enum: ['News', 'Sports', 'Games', 'Movies', 'Music', 'Television'],
+      enum: ['Action', 'Adventure', 'Horror', 'Comedy', 'Romance', 'Science-fiction'],
     },
-    author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    comments: [commentSchema],
+    reviews: [reviewSchema],
   },
   { timestamps: true }
 )

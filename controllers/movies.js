@@ -109,12 +109,17 @@ router.post('/:movieId/reviews', async (req, res) => {
     await movie.save();
 
     
+
     const newReview = movie.reviews[movie.reviews.length - 1];
+
 
     newReview._doc.author = req.user;
 
     
+
     res.status(201).json(newReview);
+
+
   } catch (error) {
     res.status(500).json(error);
   }
