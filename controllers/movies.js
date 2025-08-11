@@ -10,9 +10,6 @@ router.get('/', async (req, res) => {
   try {
     const movies = await Movie.find({})
       .populate('owner')
-      .populate('currentSeats')
-      .populate('reviews')
-      .populate('ticket')
       .sort({ createdAt: 'desc' })
     res.status(200).json(movies)
   } catch (error) {
@@ -44,32 +41,33 @@ router.get('/:movieId/seats', async (req, res) => {
 
 // ========= USER ROUTES =========
 
-router.post('/:movieId/seats', verifyToken, async (req, res) => {
-  try {
-    const movie = await Movie.findById(req.params.movieId)
-    if (!movie) return res.status(404).json({ message: "Movie not found" })
-    
-    movie.currentSeats = req.body.seats
-    await movie.save()
-
-    res.status(200).json(movie)
-  } catch (error) {
-    res.status(500).json(error)
-  }
-})
-
 router.post('/:movieId/seats/payment', verifyToken, async (req, res) => {
   try {
     const { seatNumbers } = req.body
     const movie = await Movie.findById(req.params.movieId)
+    const user = await User.findById(req.user._id)
     if (!movie) return res.status(404).json({ message: "Movie not found" })
 
-
-    res.status(200).json({
-      message: 'Ticket(s) booked successfully',
-      movieId: req.params.movieId,
-      bookedSeats: seatNumbers,
-      ticket: req.body.ticket
+      movie.currentSeats = movie.currentSeats.map(seat => {
+        if (seatNumbers.includes(seat.number) && seat.isAvailable) {
+          return { 
+            ...seat, 
+            isAvailable: false, 
+            bookedBy: user._id 
+          }
+        }
+        return seat
+      })
+      user.ticket = (user.ticket || 0) + seatNumbers.length
+      
+      await movie.save()
+      await user.save()
+  
+      res.status(200).json({
+        message: 'Ticket(s) booked successfully',
+        movieTitle: movie.title,
+        bookedSeats: seatNumbers,
+        totalTickets: user.ticket
     })
   } catch (error) {
     res.status(500).json(error)
@@ -106,7 +104,7 @@ router.put('/:movieId', verifyToken, verifyAdmin, async (req, res) => {
   } catch (error) {
     res.status(500).json(error)
   }
-
+})
 
 router.post('/:movieId', verifyToken, verifyAdmin, async (req, res) => {
   try {
@@ -120,9 +118,7 @@ router.post('/:movieId', verifyToken, verifyAdmin, async (req, res) => {
   } catch (error) {
     res.status(500).json(error)
   }
-})
-
-})
+})  
 
 
 router.put('/:movieId/seats', verifyToken, verifyAdmin, async (req, res) => {

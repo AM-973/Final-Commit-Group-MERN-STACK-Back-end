@@ -28,10 +28,10 @@ const movieSchema = new mongoose.Schema(
     },
     owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     currentSeats: {
-      type: Object,
+      type: Array,
     },
     rating: {
-      type: String,
+      type: Number,
     },
     category: {
       type: String,
