@@ -130,6 +130,92 @@ router.delete('/:showId', verifyToken, verifyAdmin, async (req, res) => {
   }
 })
 
+// ========= REVIEW ROUTES =========
+
+// GET all reviews for a movie (Public)
+router.get('/:showId/reviews', async (req, res) => {
+  try {
+    const movie = await Movie.findById(req.params.showId).populate('reviews.user', 'username')
+    if (!movie) return res.status(404).json({ message: "Movie not found" })
+    
+    res.status(200).json(movie.reviews)
+  } catch (error) {
+    res.status(500).json(error)
+  }
+})
+
+// CREATE a review (Users can add reviews)
+router.post('/:showId/reviews', verifyToken, async (req, res) => {
+  try {
+    const movie = await Movie.findById(req.params.showId)
+    if (!movie) return res.status(404).json({ message: "Movie not found" })
+    
+    const newReview = {
+      comment: req.body.comment,
+      user: req.user._id
+    }
+    
+    movie.reviews.push(newReview)
+    await movie.save()
+
+    res.status(200).json({
+      message: 'Review added successfully',
+      review: newReview
+    })
+  } catch (error) {
+    res.status(500).json(error)
+  }
+})
+
+// UPDATE a review (Users can edit their own reviews)
+router.put('/:showId/reviews/:reviewId', verifyToken, async (req, res) => {
+  try {
+    const movie = await Movie.findById(req.params.showId)
+    if (!movie) return res.status(404).json({ message: "Movie not found" })
+    
+    const review = movie.reviews.id(req.params.reviewId)
+    if (!review) return res.status(404).json({ message: 'Review not found' })
+
+    // Permission check - users can only edit their own reviews
+    if (!review.user.equals(req.user._id)) {
+      return res.status(403).json({ message: "You can only edit your own reviews" })
+    }
+
+    review.comment = req.body.comment
+    await movie.save()
+
+    res.status(200).json({ message: 'Review updated successfully' })
+  } catch (error) {
+    res.status(500).json(error)
+  }
+})
+
+// DELETE a review (Users can delete their own reviews)
+router.delete('/:showId/reviews/:reviewId', verifyToken, async (req, res) => {
+  try {
+    const movie = await Movie.findById(req.params.showId)
+    if (!movie) return res.status(404).json({ message: "Movie not found" })
+    
+    const review = movie.reviews.id(req.params.reviewId)
+    if (!review) return res.status(404).json({ message: 'Review not found' })
+
+    // Permission check - users can only delete their own reviews
+    if (!review.user.equals(req.user._id)) {
+      return res.status(403).json({ message: "You can only delete your own reviews" })
+    }
+
+    movie.reviews.pull(req.params.reviewId)
+    await movie.save()
+
+    res.status(200).json({ message: 'Review deleted successfully' })
+  } catch (error) {
+    res.status(500).json(error)
+  }
+})
+
+
+
+
 
 
 module.exports = router

@@ -14,6 +14,7 @@ const testJwtRouter = require('./controllers/test-jwt')
 const authRouter = require('./controllers/auth')
 const userRouter = require('./controllers/users')
 const moviesRouter = require('./controllers/movies')
+const reviewsRouter = require('./controllers/reviews')	
 
 // Middleware
 const verifyToken = require('./middleware/verify-token')
@@ -37,6 +38,7 @@ app.use('/test-jwt', testJwtRouter)
 // PROTECTED ROUTES
 app.use('/users', verifyToken, userRouter)
 app.use('/shows', moviesRouter)
+app.use('/reviews', reviewsRouter)
 
 app.listen(3000, () => {
 	console.log('The express app is ready!')
