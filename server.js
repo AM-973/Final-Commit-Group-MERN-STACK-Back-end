@@ -36,7 +36,7 @@ app.use('/test-jwt', testJwtRouter)
 
 // PROTECTED ROUTES
 app.use('/users', verifyToken, userRouter)
-app.use('/shows', moviesRouter)
+app.use('/movies', moviesRouter)
 
 app.listen(3000, () => {
 	console.log('The express app is ready!')
