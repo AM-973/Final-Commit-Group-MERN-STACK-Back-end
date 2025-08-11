@@ -17,6 +17,9 @@ const userSchema = new mongoose.Schema(
     isAdmin: {
       type: Boolean,
     },
+    ticket: {
+      type: Number,
+    },
   },
   {
     timestamps: true,
