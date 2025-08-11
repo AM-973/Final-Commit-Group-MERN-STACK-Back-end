@@ -30,8 +30,13 @@ router.put('/profile', verifyToken, async (req, res) => {
 
 router.get('/tickets', verifyToken, async (req, res) => {
   try {
-    const tickets = await Ticket.find({ user: req.user._id }).populate('movie')
-    res.status(200).json(tickets)
+    const user = await User.findById(req.user._id)
+    res.status(200).json({
+      userId: user._id,
+      userName: user.name,
+      ticketCount: user.ticket || 0,
+      message: user.ticket ? `You have ${user.ticket} tickets` : "No tickets found"
+    })
   } catch (error) {
     res.status(500).json(error)
   }
