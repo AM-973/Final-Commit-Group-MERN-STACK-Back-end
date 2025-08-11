@@ -14,12 +14,33 @@ router.get('/', async (req, res) => {
       res.status(500).json(error);
     }
   });
+
+  router.get('/movies', async (req, res) => {
+    try {
+      const movies = await Movie.find({});
+      res.status(200).json(movies);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  });
+
+  router.get('')
+
+  router.get('/:movieId', async (req, res) => {
+    try {
+      const movie = await Movie.findById(req.params.movieId).populate('author');
+      res.status(200).json(movie);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  });
+
 // ========= Protected Routes =========
 
-router.use(verifyToken)
+
 
 // CREATE NEW MOVIE
-router.post('/', async (req, res) => {
+router.post('/movies', async (req, res) => {
 	try {
 		req.body.author = req.user._id
 		const movie = await Movie.create(req.body)
@@ -32,14 +53,6 @@ router.post('/', async (req, res) => {
 })
 
 
-router.get('/:movieId', async (req, res) => {
-    try {
-      const movie = await Movie.findById(req.params.movieId).populate('author');
-      res.status(200).json(movie);
-    } catch (error) {
-      res.status(500).json(error);
-    }
-  });
 
 
 router.put('/:movieId', async (req, res) => {
@@ -132,4 +145,6 @@ router.delete('/:movieId/comments/:commentId', async (req, res) => {
     res.status(500).json(err);
   }
 });
+router.use(verifyToken)
+
 module.exports = router
