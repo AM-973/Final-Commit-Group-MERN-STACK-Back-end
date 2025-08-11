@@ -11,7 +11,7 @@ const commentSchema = new mongoose.Schema(
   { timestamps: true }
 )
 
-const hootSchema = new mongoose.Schema(
+const movieSchema = new mongoose.Schema(
   {
     title: {
       type: String,
@@ -32,5 +32,5 @@ const hootSchema = new mongoose.Schema(
   { timestamps: true }
 )
 
-const Hoot = mongoose.model('Hoot', hootSchema)
-module.exports = Hoot
+const Movie = mongoose.model('Movie', movieSchema)
+module.exports = Movie
