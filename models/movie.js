@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 
+
 const reviewSchema = new mongoose.Schema(
   {
     comment: {
@@ -21,7 +22,7 @@ const movieSchema = new mongoose.Schema(
       type: Object,
       required: true,
     },
-    creationDate: {
+    creationdate: {
       type: Date,
       default: Date.now,
     },
@@ -43,4 +44,6 @@ const movieSchema = new mongoose.Schema(
 )
 
 const Movie = mongoose.model('Movie', movieSchema)
+
+
 module.exports = Movie
