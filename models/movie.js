@@ -26,7 +26,7 @@ const movieSchema = new mongoose.Schema(
       default: Date.now,
     },
     owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    currentSeats: {
+    seats: {
       type: Object,
     },
     rating: {
