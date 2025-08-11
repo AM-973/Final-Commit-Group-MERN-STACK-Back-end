@@ -9,7 +9,6 @@ router.get('/sign-token', (req, res) => {
     _id: 1,
     username: 'test',
     password: 'test',
-    hahahahaha: 'not secure',
   };
 
   const token = jwt.sign(user, process.env.JWT_SECRET);

@@ -59,17 +59,17 @@ router.put('/:movieId', async (req, res) => {
         { new: true }
       );
   
-      // Append req.user to the author property:
+      
       updatedMovie._doc.author = req.user;
   
-      // Issue JSON response:
+      
       res.status(200).json(updatedMovie);
     } catch (error) {
       res.status(500).json(error);
     }
   });
 
-  // controllers/movies.js
+  
 
 router.delete('/:movieId', async (req, res) => {
   try {
@@ -86,7 +86,7 @@ router.delete('/:movieId', async (req, res) => {
   }
 });
 
-// controllers/movies.js
+
 
 router.post('/:movieId/comments', async (req, res) => {
   try {
@@ -95,19 +95,18 @@ router.post('/:movieId/comments', async (req, res) => {
     movie.comments.push(req.body);
     await movie.save();
 
-    // Find the newly created comment:
+    
     const newComment = movie.comments[movie.comments.length - 1];
 
     newComment._doc.author = req.user;
 
-    // Respond with the newComment:
+    
     res.status(201).json(newComment);
   } catch (error) {
     res.status(500).json(error);
   }
 });
 
-// controllers/movies.js
 
 router.put('/:movieId/comments/:commentId', async (req, res) => {
   try {
