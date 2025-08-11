@@ -10,9 +10,9 @@ const saltRounds = 12;
 
 router.post('/sign-up', async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, password } = req.body;
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ name });
 
     if (existingUser) {
       return res.status(409).json({ err: 'Username or Password is invalid' });
