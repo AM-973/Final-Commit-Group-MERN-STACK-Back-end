@@ -121,7 +121,7 @@ router.put('/:movieId/comments/:commentId', async (req, res) => {
   }
 });
 
-// controllers/movies.js
+// delete comment
 
 router.delete('/:movieId/comments/:commentId', async (req, res) => {
   try {
