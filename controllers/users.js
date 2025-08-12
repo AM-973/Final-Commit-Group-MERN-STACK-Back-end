@@ -13,8 +13,16 @@ router.get('/',async (req, res) => {
   }
 })
 
+router.get('/:userId', verifyToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId)
+    res.status(200).json(user)
+  } catch (error) {
+    res.status(500).json(error)
+  }
+})
 
-router.put('/:userId', async (req, res) => {
+router.put('/:userId', verifyToken, async (req, res) => {
   try {
     const user = await User.findByIdAndUpdate(req.params.userId, req.body, { new: true })
     res.status(200).json(user)
@@ -23,7 +31,7 @@ router.put('/:userId', async (req, res) => {
   }
 })
 
-router.delete('/:userId', async (req, res) => {
+router.delete('/:userId', verifyToken, async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.params.userId)
     res.status(200).json(user)
