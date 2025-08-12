@@ -30,10 +30,6 @@ const movieSchema = new mongoose.Schema(
     currentSeats: {
       type: Object,
     },
-    image: {
-      url: { type: String, required: true},
-      cloudinary_id: { type: String, required: true}
-  },
     category: {
       type: String,
       required: true,
