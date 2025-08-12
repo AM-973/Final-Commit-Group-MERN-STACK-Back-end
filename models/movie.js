@@ -7,6 +7,12 @@ const reviewSchema = new mongoose.Schema(
       type: String,
       required: true
     },
+    rating: {
+      type: Number,
+      required: true,
+      min: 1,
+      max: 5,
+    },  
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
   },
   { timestamps: true }
@@ -30,10 +36,6 @@ const movieSchema = new mongoose.Schema(
     currentSeats: {
       type: Object,
     },
-    image: {
-      url: { type: String, required: true},
-      cloudinary_id: { type: String, required: true}
-  },
     category: {
       type: String,
       required: true,
