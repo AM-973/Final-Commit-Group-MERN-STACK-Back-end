@@ -67,6 +67,8 @@ const movieSchema = new mongoose.Schema(
 )
 
 const Movie = mongoose.model('Movie', movieSchema)
+const Review = mongoose.model('Review', reviewSchema)
+const Seats = mongoose.model('Seats', availableSeatsSchema)
 
 
-module.exports = Movie
+module.exports = Movie, Review, Seats

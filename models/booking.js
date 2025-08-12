@@ -19,7 +19,8 @@ const bookingSchema = new mongoose.Schema(
     },
     seats: [
       {
-        type: String, 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Seats',
         required: true,
       },
     ],
