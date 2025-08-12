@@ -18,7 +18,6 @@ router.get('/', async (req, res) => {
     res.status(500).json(error)
   }
 })
-// SHOW ONE MOVIE DETAILS
 router.get('/:movieId', async (req, res) => {
   try {
     const movie = await Movie.findById(req.params.movieId).populate('owner')
