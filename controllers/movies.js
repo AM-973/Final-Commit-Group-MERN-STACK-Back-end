@@ -51,27 +51,57 @@ router.post('/:movieId/seats/payment', verifyToken, async (req, res) => {
     const movie = await Movie.findById(req.params.movieId)
     const user = await User.findById(req.user._id)
     if (!movie) return res.status(404).json({ message: "Movie not found" })
+    if (!user) return res.status(404).json({ message: "User not found" })
 
-      movie.currentSeats = movie.currentSeats.map(seat => {
-        if (seatNumbers.includes(seat.number) && seat.isAvailable) {
-          return { 
-            ...seat, 
-            isAvailable: false, 
-            bookedBy: user._id 
-          }
-        }
-        return seat
+    // Check if seats are available
+    const unavailableSeats = seatNumbers.filter(seatNum => {
+      const seat = movie.currentSeats.find(s => s.number === seatNum)
+      return !seat || !seat.isAvailable
+    })
+
+    if (unavailableSeats.length > 0) {
+      return res.status(400).json({
+        message: `Seats already booked or invalid: ${unavailableSeats.join(', ')}`
       })
-      user.ticket = (user.ticket || 0) + seatNumbers.length
-      
-      await movie.save()
-      await user.save()
-  
-      res.status(200).json({
-        message: 'Ticket(s) booked successfully',
-        movieTitle: movie.title,
-        bookedSeats: seatNumbers,
-        totalTickets: user.ticket
+    }
+
+    // Mark seats as booked in the movie document
+    movie.currentSeats = movie.currentSeats.map(seat => {
+      if (seatNumbers.includes(seat.number)) {
+        return {
+          ...seat.toObject ? seat.toObject() : seat,
+          isAvailable: false,
+          bookedBy: user._id
+        }
+      }
+      return seat
+    })
+
+    await movie.save()
+
+    // Create booking record in Booking schema
+    const ticketNumber = `T-${Date.now()}-${Math.floor(Math.random() * 10000)}`
+    const booking = await Booking.create({
+      ticketNumber,
+      user: user._id,
+      movie: movie._id,
+      seats: seatNumbers,
+      timing: movie.timing,
+    })
+
+    // Update user's ticket count
+    user.ticket = (user.ticket || 0) + seatNumbers.length
+    await user.save()
+
+    // Populate booking with movie and user data for response
+    const populatedBooking = await Booking.findById(booking._id)
+      .populate('user', 'name')
+      .populate('movie', 'title timing')
+
+    res.status(200).json({
+      message: 'Ticket(s) booked successfully',
+      booking: populatedBooking,
+      totalTickets: user.ticket,
     })
     res.redirect(`/movies/${req.params.movieId}`)
   } catch (error) {
