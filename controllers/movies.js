@@ -83,7 +83,7 @@ router.post('/:movieId/seats/payment', verifyToken, async (req, res) => {
       user: user._id,
       movie: movie._id,
       seats: seatNumbers,
-
+      timing: movie.timing,
     })
 
     // Update user's ticket count
@@ -211,6 +211,7 @@ router.post('/:movieId/reviews', verifyToken, async (req, res) => {
   }
 });
 
+// UPDATE REVIEW
 router.put('/:movieId/reviews/:reviewId', verifyToken, async (req, res) => {
   try {
     const movie = await Movie.findById(req.params.movieId)
@@ -232,7 +233,7 @@ router.put('/:movieId/reviews/:reviewId', verifyToken, async (req, res) => {
   }
 })
 
-
+// DELETE REVIEW
 router.delete('/:movieId/reviews/:reviewId', verifyToken, async (req, res) => {
   try {
     const movie = await Movie.findById(req.params.movieId)
