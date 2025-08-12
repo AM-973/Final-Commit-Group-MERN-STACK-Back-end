@@ -83,7 +83,7 @@ router.post('/:movieId/seats/payment', verifyToken, async (req, res) => {
       user: user._id,
       movie: movie._id,
       seats: seatNumbers,
-
+      timing: movie.timing,
     })
 
     // Update user's ticket count
