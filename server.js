@@ -13,8 +13,7 @@ const logger = require('morgan')
 const testJwtRouter = require('./controllers/test-jwt')
 const authRouter = require('./controllers/auth')
 const userRouter = require('./controllers/users')
-const moviesRouter = require('./controllers/movies')
-const reviewsRouter = require('./controllers/reviews')	
+const moviesRouter = require('./controllers/movies')	
 
 // Middleware
 const verifyToken = require('./middleware/verify-token')
@@ -39,7 +38,6 @@ app.use('/test-jwt', testJwtRouter)
 app.use('/users', verifyToken, userRouter)
 
 app.use('/movies', moviesRouter)
-app.use('/reviews', reviewsRouter)
 
 app.listen(3000, () => {
 	console.log('The express app is ready!')
