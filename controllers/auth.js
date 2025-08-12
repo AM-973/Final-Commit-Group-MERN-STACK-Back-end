@@ -10,20 +10,22 @@ const saltRounds = 12;
 
 router.post('/sign-up', async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, password } = req.body;
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ name });
 
     if (existingUser) {
       return res.status(409).json({ err: 'Username or Password is invalid' });
     }
 
     const hashedPassword = bcrypt.hashSync(password, saltRounds);
-    const newUser = await User.create({ name, email, password: hashedPassword });
+    const newUser = await User.create({ name, password: hashedPassword });
 
     const payload = {
       name: newUser.name,
       _id: newUser._id,
+      isAdmin: newUser.isAdmin,
+      ticket: newUser.ticket,
     };
     const token = jwt.sign(payload, process.env.JWT_SECRET);
 
@@ -35,14 +37,13 @@ router.post('/sign-up', async (req, res) => {
 
 router.post('/sign-in', async (req, res, next) => {
   try {
-    const user = await User.findOne({ email: req.body.email });
+    const user = await User.findOne({ name: req.body.name });
     if (!user) {
       return res.status(401).json({ err: 'Invalid credentials.' });
     }
 
-    // Check if the password is correct using bcrypt
+    
     const isPasswordCorrect = bcrypt.compareSync(req.body.password, user.password);
-    // If the password is incorrect, return a 401 status code with a message
     if (!isPasswordCorrect) {
       return res.status(401).json({ err: 'Invalid credentials.' });
     }
@@ -50,6 +51,8 @@ router.post('/sign-in', async (req, res, next) => {
     const payload = {
       name: user.name,
       _id: user._id,
+      isAdmin: user.isAdmin,
+      ticket: user.ticket,
     };
 
     const token = jwt.sign(payload, process.env.JWT_SECRET);

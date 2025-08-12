@@ -31,7 +31,7 @@ const movieSchema = new mongoose.Schema(
       type: Object,
     },
     rating: {
-      type: String,
+      type: Number,
     },
     category: {
       type: String,
