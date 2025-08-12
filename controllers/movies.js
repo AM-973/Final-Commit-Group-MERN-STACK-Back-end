@@ -149,20 +149,7 @@ router.get('/:movieId/admin/seats', verifyToken, verifyAdmin, async (req, res) =
     res.status(500).json(error)
   }
 })
-// UPDATE SEATS
-router.put('/:movieId/seats', verifyToken, verifyAdmin, async (req, res) => {
-  try {
-    const movie = await Movie.findById(req.params.movieId)
-    if (!movie) return res.status(404).json({ message: "Movie not found" })
 
-    movie.seats = req.body.seats
-    await movie.save()
-
-    res.status(200).json(movie)
-  } catch (error) {
-    res.status(500).json(error)
-  }
-})
 
 // DELETE MOVIE
 router.delete('/:movieId', verifyToken, verifyAdmin, async (req, res) => {
