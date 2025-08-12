@@ -18,6 +18,8 @@ router.get('/', async (req, res) => {
     res.status(500).json(error)
   }
 })
+
+// get specific movie
 router.get('/:movieId', async (req, res) => {
   try {
     const movie = await Movie.findById(req.params.movieId).populate('owner')
@@ -109,7 +111,7 @@ router.post('/:movieId/seats/payment', verifyToken, async (req, res) => {
 // ========= ADMIN ROUTES =========
 
 // CREATE MOVIE
-router.post('/', verifyToken, async (req, res) => {
+router.post('/', verifyToken, verifyAdmin, async (req, res) => {
   try {
     req.body.owner = req.user._id
     const movie = await Movie.create(req.body)
@@ -138,6 +140,19 @@ router.put('/:movieId', verifyToken, verifyAdmin, async (req, res) => {
   }
 })
 
+// DELETE MOVIE
+router.delete('/:movieId', verifyToken, verifyAdmin, async (req, res) => {
+  try {
+    const movie = await Movie.findById(req.params.movieId)
+    if (!movie) return res.status(404).json({ message: "Movie not found" })
+
+    const deletedMovie = await Movie.findByIdAndDelete(req.params.movieId)
+    res.status(200).json(deletedMovie)
+  } catch (error) {
+    res.status(500).json(error)
+  }
+})
+
 // ADMIN - GET SEATS WITH USER DETAILS
 router.get('/:movieId/admin/seats', verifyToken, verifyAdmin, async (req, res) => {
   try {
@@ -151,18 +166,6 @@ router.get('/:movieId/admin/seats', verifyToken, verifyAdmin, async (req, res) =
 })
 
 
-// DELETE MOVIE
-router.delete('/:movieId', verifyToken, verifyAdmin, async (req, res) => {
-  try {
-    const movie = await Movie.findById(req.params.movieId)
-    if (!movie) return res.status(404).json({ message: "Movie not found" })
-
-    const deletedMovie = await Movie.findByIdAndDelete(req.params.movieId)
-    res.status(200).json(deletedMovie)
-  } catch (error) {
-    res.status(500).json(error)
-  }
-})
 
 router.get('/:movieId/reviews', async (req, res) => {
   try {
