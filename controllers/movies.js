@@ -5,7 +5,7 @@ const Movie = require('../models/movie.js')
 const router = express.Router()
 
 // ========== Public Routes ===========
-
+// SHOW ALL MOVIES
 router.get('/', async (req, res) => {
   try {
     const movies = await Movie.find({})
@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
     res.status(500).json(error)
   }
 })
-
+// SHOW ONE MOVIE DETAILS
 router.get('/:movieId', async (req, res) => {
   try {
     const movie = await Movie.findById(req.params.movieId).populate('owner')
@@ -27,7 +27,7 @@ router.get('/:movieId', async (req, res) => {
   }
 })
 
-
+// SHOW SEATS
 router.get('/:movieId/seats', async (req, res) => {
   try {
     const movie = await Movie.findById(req.params.movieId)
@@ -76,7 +76,7 @@ router.post('/:movieId/seats/payment', verifyToken, async (req, res) => {
 
 // ========= ADMIN ROUTES =========
 
-
+// CREATE MOVIE
 router.post('/', verifyToken, verifyAdmin, async (req, res) => {
   try {
     req.body.owner = req.user._id
@@ -88,7 +88,7 @@ router.post('/', verifyToken, verifyAdmin, async (req, res) => {
   }
 })
 
-
+// UPDATE MOVIE
 router.put('/:movieId', verifyToken, verifyAdmin, async (req, res) => {
   try {
     const movie = await Movie.findById(req.params.movieId)
@@ -105,8 +105,8 @@ router.put('/:movieId', verifyToken, verifyAdmin, async (req, res) => {
     res.status(500).json(error)
   }
 })
-
-router.post('/:movieId', verifyToken, verifyAdmin, async (req, res) => {
+// CREATE SEATS
+router.post('/:movieId/seats', verifyToken, verifyAdmin, async (req, res) => {
   try {
     const movie = await Movie.findById(req.params.movieId)
     if (!movie) return res.status(404).json({ message: "Movie not found" })
@@ -120,7 +120,7 @@ router.post('/:movieId', verifyToken, verifyAdmin, async (req, res) => {
   }
 })  
 
-
+// UPDATE SEATS
 router.put('/:movieId/seats', verifyToken, verifyAdmin, async (req, res) => {
   try {
     const movie = await Movie.findById(req.params.movieId)
@@ -135,7 +135,7 @@ router.put('/:movieId/seats', verifyToken, verifyAdmin, async (req, res) => {
   }
 })
 
-
+// DELETE MOVIE
 router.delete('/:movieId', verifyToken, verifyAdmin, async (req, res) => {
   try {
     const movie = await Movie.findById(req.params.movieId)
@@ -147,5 +147,27 @@ router.delete('/:movieId', verifyToken, verifyAdmin, async (req, res) => {
     res.status(500).json(error)
   }
 })
+
+// CREATE A REVIEW
+router.post('/:movieId/review', verifyToken, async (req, res) => {
+  try {
+    const movie = await Movie.findById(req.params.movieId);
+    if (!movie) {
+      return res.status(404).json({ message: "Movie not found" });
+    }
+
+    req.body.user = req.user._id;
+    movie.reviews.push(req.body);
+    await movie.save();
+
+    await movie.populate(`reviews.${movie.reviews.length - 1}.user`, '-password');
+
+    const newReview = movie.reviews[movie.reviews.length - 1];
+    res.status(201).json(newReview);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json(error);
+  }
+});
 
 module.exports = router
