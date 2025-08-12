@@ -2,6 +2,10 @@ const express = require('express')
 const verifyToken = require('../middleware/verify-token.js')
 const verifyAdmin = require('../middleware/verify-admin.js')
 const Movie = require('../models/movie.js')
+const cloudinary = require('../config/cloudinary.js')
+const User = require('../models/user.js')
+const multer = require('multer')
+const upload = require('../config/multer.js')
 const router = express.Router()
 
 // ========== Public Routes ===========
@@ -11,10 +15,6 @@ router.get('/', async (req, res) => {
     const movies = await Movie.find({})
       .populate('owner')
       .sort({ createdAt: 'desc' })
-      req.body.image = {
-            url: req.file.path,
-            cloudinary_id: req.file.filename
-        }
     res.status(200).json(movies)
   } catch (error) {
     res.status(500).json(error)
@@ -85,8 +85,16 @@ router.post('/:movieId/seats/payment', verifyToken, async (req, res) => {
 router.post('/', verifyToken, verifyAdmin, async (req, res) => {
   try {
     req.body.owner = req.user._id
+    req.body.image = {
+      url: req.file.path,
+      cloudinary_id: req.file.filename
+    }
     const movie = await Movie.create(req.body)
     movie._doc.owner = req.user
+    movie._doc.image = {
+      url: req.file.path,
+      cloudinary_id: req.file.filename
+    }
     res.status(200).json(movie)
     res.redirect(`/movies/${movie._id}`)
   } catch (error) {
