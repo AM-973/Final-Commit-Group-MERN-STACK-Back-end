@@ -26,7 +26,7 @@ const availableSeatsSchema = new mongoose.Schema(
       max: 35,
     },
     isAvailable: {
-      type: boolean,
+      type: Boolean,
       default: true,
     }
   }
