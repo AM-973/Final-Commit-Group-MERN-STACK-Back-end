@@ -3,6 +3,7 @@ const verifyToken = require('../middleware/verify-token.js')
 const verifyAdmin = require('../middleware/verify-admin.js')
 const Movie = require('../models/movie.js')
 const User = require('../models/user.js')
+const Booking = require('../models/booking.js')
 const router = express.Router()
 
 // ========== Public Routes ===========
@@ -83,7 +84,7 @@ router.post('/:movieId/seats/payment', verifyToken, async (req, res) => {
       user: user._id,
       movie: movie._id,
       seats: seatNumbers,
-      timing: movie.timing,
+
     })
 
     // Update user's ticket count
@@ -100,7 +101,6 @@ router.post('/:movieId/seats/payment', verifyToken, async (req, res) => {
       booking: populatedBooking,
       totalTickets: user.ticket,
     })
-    res.redirect(`/movies/${req.params.movieId}`)
   } catch (error) {
     res.status(500).json(error)
   }
@@ -115,7 +115,6 @@ router.post('/', verifyToken, verifyAdmin, async (req, res) => {
     const movie = await Movie.create(req.body)
     movie._doc.owner = req.user
     res.status(200).json(movie)
-    res.redirect(`/movies/${movie._id}`)
   } catch (error) {
     res.status(500).json(error)
   }
@@ -134,7 +133,6 @@ router.put('/:movieId', verifyToken, verifyAdmin, async (req, res) => {
     )
 
     res.status(200).json(updatedMovie)
-    res.redirect(`/movies/${updatedMovie._id}`)
   } catch (error) {
     res.status(500).json(error)
   }
@@ -149,7 +147,6 @@ router.post('/:movieId/seats', verifyToken, verifyAdmin, async (req, res) => {
     await movie.save()
     
     res.status(200).json(movie)
-    res.redirect(`/movies/${movie._id}`)
   } catch (error) {
     res.status(500).json(error)
   }
@@ -165,7 +162,6 @@ router.put('/:movieId/seats', verifyToken, verifyAdmin, async (req, res) => {
     await movie.save()
 
     res.status(200).json(movie)
-    res.redirect(`/movies/${movie._id}`)
   } catch (error) {
     res.status(500).json(error)
   }
@@ -179,7 +175,6 @@ router.delete('/:movieId', verifyToken, verifyAdmin, async (req, res) => {
 
     const deletedMovie = await Movie.findByIdAndDelete(req.params.movieId)
     res.status(200).json(deletedMovie)
-    res.redirect('/movies')
   } catch (error) {
     res.status(500).json(error)
   }
@@ -201,7 +196,6 @@ router.post('/:movieId/review', verifyToken, async (req, res) => {
 
     const newReview = movie.reviews[movie.reviews.length - 1];
     res.status(201).json(newReview);
-    res.redirect(`/movies/${movie._id}`)
   } catch (error) {
     console.error(error);
     res.status(500).json(error);
@@ -224,7 +218,6 @@ router.put('/:movieId/reviews/:reviewId', verifyToken, async (req, res) => {
     await movie.save()
 
     res.status(200).json(review)
-    res.redirect(`/movies/${movie._id}`)
   } catch (error) {
     res.status(500).json(error)
   }
@@ -242,10 +235,9 @@ router.delete('/:movieId/reviews/:reviewId', verifyToken, async (req, res) => {
       return res.status(403).json({ message: "Unauthorized" })
     }
 
-    review.remove()
+    movie.reviews.pull(req.params.reviewId)
     await movie.save()
     res.status(200).json({ message: "Review deleted successfully" })
-    res.redirect(`/movies/${movie._id}`)
   } catch (error) {
     res.status(500).json(error)
   }
