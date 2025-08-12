@@ -18,7 +18,6 @@ router.get('/', async (req, res) => {
     res.status(500).json(error)
   }
 })
-// SHOW ONE MOVIE DETAILS
 router.get('/:movieId', async (req, res) => {
   try {
     const movie = await Movie.findById(req.params.movieId).populate('owner')
@@ -180,8 +179,18 @@ router.delete('/:movieId', verifyToken, verifyAdmin, async (req, res) => {
   }
 })
 
+router.get('/:movieId/reviews', async (req, res) => {
+  try {
+    const movie = await Movie.findById(req.params.movieId)
+    if (!movie) return res.status(404).json({ message: "Movie not found" })
+    res.status(200).json(movie.reviews)
+  } catch (error) {
+    res.status(500).json(error)
+  }
+})
+
 // CREATE A REVIEW
-router.post('/:movieId/review', verifyToken, async (req, res) => {
+router.post('/:movieId/reviews', verifyToken, async (req, res) => {
   try {
     const movie = await Movie.findById(req.params.movieId);
     if (!movie) {
