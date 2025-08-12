@@ -170,4 +170,44 @@ router.post('/:movieId/review', verifyToken, async (req, res) => {
   }
 });
 
+router.put('/:movieId/reviews/:reviewId', verifyToken, async (req, res) => {
+  try {
+    const movie = await Movie.findById(req.params.movieId)
+    if (!movie) return res.status(404).json({ message: "Movie not found" })
+    const review = movie.reviews.id(req.params.reviewId)
+    if (!review) return res.status(404).json({ message: "Review not found" })
+
+    if (review.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Unauthorized" })
+    }
+
+    review.comment = req.body.comment
+    review.rating = req.body.rating
+    await movie.save()
+
+    res.status(200).json(review)
+  } catch (error) {
+    res.status(500).json(error)
+  }
+})
+
+
+router.delete('/:movieId/reviews/:reviewId', verifyToken, async (req, res) => {
+  try {
+    const movie = await Movie.findById(req.params.movieId)
+    if (!movie) return res.status(404).json({ message: "Movie not found" })
+    const review = movie.reviews.id(req.params.reviewId)
+    if (!review) return res.status(404).json({ message: "Review not found" })
+
+    if (review.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Unauthorized" })
+    }
+
+    review.remove()
+    await movie.save()
+    res.status(200).json({ message: "Review deleted successfully" })
+  } catch (error) {
+    res.status(500).json(error)
+  }
+})
 module.exports = router
