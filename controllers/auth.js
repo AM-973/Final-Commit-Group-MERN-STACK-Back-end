@@ -10,19 +10,19 @@ const saltRounds = 12;
 
 router.post('/sign-up', async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { name, password } = req.body;
 
-    const existingUser = await User.findOne({ username });
+    const existingUser = await User.findOne({ name });
 
     if (existingUser) {
       return res.status(409).json({ err: 'Username or Password is invalid' });
     }
 
     const hashedPassword = bcrypt.hashSync(password, saltRounds);
-    const newUser = await User.create({ username, password: hashedPassword });
+    const newUser = await User.create({ name, password: hashedPassword });
 
     const payload = {
-      username: newUser.username,
+      name: newUser.name,
       _id: newUser._id,
       isAdmin: newUser.isAdmin,
       ticket: newUser.ticket,
@@ -37,7 +37,7 @@ router.post('/sign-up', async (req, res) => {
 
 router.post('/sign-in', async (req, res, next) => {
   try {
-    const user = await User.findOne({ username: req.body.username });
+    const user = await User.findOne({ name: req.body.name });
     if (!user) {
       return res.status(401).json({ err: 'Invalid credentials.' });
     }
@@ -49,7 +49,7 @@ router.post('/sign-in', async (req, res, next) => {
     }
 
     const payload = {
-      username: user.username,
+      name: user.name,
       _id: user._id,
       isAdmin: user.isAdmin,
       ticket: user.ticket,
@@ -62,5 +62,7 @@ router.post('/sign-in', async (req, res, next) => {
     res.status(500).json({ err: err.message });
   }
 });
- 
+
+
 module.exports = router;
+

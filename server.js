@@ -13,7 +13,7 @@ const logger = require('morgan')
 const testJwtRouter = require('./controllers/test-jwt')
 const authRouter = require('./controllers/auth')
 const userRouter = require('./controllers/users')
-const moviesRouter = require('./controllers/movies')	
+const moviesRouter = require('./controllers/movies')
 
 // Middleware
 const verifyToken = require('./middleware/verify-token')
@@ -36,7 +36,6 @@ app.use('/test-jwt', testJwtRouter)
 
 // PROTECTED ROUTES
 app.use('/users', verifyToken, userRouter)
-
 app.use('/movies', moviesRouter)
 
 app.listen(3000, () => {
