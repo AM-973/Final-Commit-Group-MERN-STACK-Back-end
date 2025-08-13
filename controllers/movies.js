@@ -128,7 +128,7 @@ router.post('/:movieId/seats/payment', verifyToken, async (req, res) => {
 // ========= ADMIN ROUTES =========
 
 // CREATE MOVIE
-router.post('/', verifyToken, verifyAdmin, async (req, res) => {
+router.post('/', verifyToken, async (req, res) => {
   try {
     req.body.owner = req.user._id
     const movie = await Movie.create(req.body)
