@@ -18,17 +18,23 @@ const reviewSchema = new mongoose.Schema(
   { timestamps: true }
 )
 
-const availableSeatsSchema = new mongoose.Schema(
+const seatSchema = new mongoose.Schema(
   {
-    seatNumber: {
+    number: {
       type: Number,
       required: true,
+      min: 1,
       max: 35,
     },
     isAvailable: {
       type: Boolean,
       default: true,
       required: true,
+    },
+    bookedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      default: null
     }
   }
 )
@@ -39,7 +45,7 @@ const movieSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    Summary: {
+    summary: {
       type: String,
       required: true,
     },
@@ -56,7 +62,20 @@ const movieSchema = new mongoose.Schema(
       default: Date.now,
     },
     owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    currentSeats: [availableSeatsSchema],
+    seats: {
+      type: [seatSchema],
+      default: function() {
+        const defaultSeats = []
+        for (let seat = 1; seat <= 35; seat++) {
+          defaultSeats.push({
+            number: seat,
+            isAvailable: true,
+            bookedBy: null
+          })
+        }
+        return defaultSeats
+      }
+    },
     category: {
       type: String,
       required: true,
@@ -68,8 +87,6 @@ const movieSchema = new mongoose.Schema(
 )
 
 const Movie = mongoose.model('Movie', movieSchema)
-const Review = mongoose.model('Review', reviewSchema)
-const Seats = mongoose.model('Seats', availableSeatsSchema)
 
 
-module.exports = Movie, Review, Seats
+module.exports = Movie
