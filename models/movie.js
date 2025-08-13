@@ -23,7 +23,6 @@ const seatSchema = new mongoose.Schema(
     number: {
       type: Number,
       required: true,
-      min: 1,
       max: 35,
     },
     isAvailable: {
