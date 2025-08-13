@@ -34,7 +34,7 @@ router.get('/:movieId', async (req, res) => {
 router.get('/:movieId/seats', async (req, res) => {
   try {
     const movie = await Movie.findById(req.params.movieId)
-      .populate('seats.bookedBy', 'username')
+      .populate('seats.bookedBy', 'name email')
     if (!movie) return res.status(404).json({ message: "Movie not found" })
     
     res.status(200).json(movie.seats)
@@ -99,7 +99,7 @@ router.post('/:movieId/seats/payment', verifyToken, async (req, res) => {
     await user.save();
 
     const populatedBooking = await Booking.findById(booking._id)
-      .populate('user', 'username')  
+      .populate('user', 'name')
       .populate('movie', 'title creationdate');
 
     res.status(200).json({
@@ -107,7 +107,7 @@ router.post('/:movieId/seats/payment', verifyToken, async (req, res) => {
       booking: {
         user: {
           _id: populatedBooking.user._id,
-          username: populatedBooking.user.username, 
+          name: populatedBooking.user.name,
         },
         movie: {
           title: populatedBooking.movie.title,
@@ -174,7 +174,7 @@ router.delete('/:movieId', verifyToken, verifyAdmin, async (req, res) => {
 router.get('/:movieId/admin/seats', verifyToken, verifyAdmin, async (req, res) => {
   try {
     const movie = await Movie.findById(req.params.movieId)
-      .populate('seats.bookedBy', 'username') 
+      .populate('seats.bookedBy', 'name')
     if (!movie) return res.status(404).json({ message: "Movie not found" })
     res.status(200).json(movie.seats)
   } catch (error) {
@@ -206,7 +206,7 @@ router.post('/:movieId/reviews', verifyToken, async (req, res) => {
     movie.reviews.push(req.body);
     await movie.save();
 
-    await movie.populate(`reviews.${movie.reviews.length - 1}.user`);
+    await movie.populate(`reviews.${movie.reviews.length - 1}.user`, '-password');
 
     const newReview = movie.reviews[movie.reviews.length - 1];
     res.status(201).json(newReview);
