@@ -38,9 +38,9 @@ app.use('/test-jwt', testJwtRouter)
 app.use('/users', verifyToken, userRouter)
 app.use('/movies', moviesRouter)
 
+const PORT = process.env.PORT || 3000
 
-
-app.listen(3000, () => {
-	console.log(`The express app is ready on port 3000`)
+app.listen(PORT, () => {
+	console.log(`The express app is ready on port ${PORT}`)
 })
 
