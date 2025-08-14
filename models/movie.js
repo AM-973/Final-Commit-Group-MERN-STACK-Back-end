@@ -95,7 +95,6 @@ const movieSchema = new mongoose.Schema(
     category: {
       type: String,
       required: true,
-      enum: ['Action', 'Adventure', 'Horror', 'Comedy', 'Romance', 'Science-fiction'],
     },
     reviews: [reviewSchema],
   },
