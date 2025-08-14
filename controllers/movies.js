@@ -11,7 +11,7 @@ const router = express.Router()
 router.get('/', async (req, res) => {
   try {
     const movies = await Movie.find({})
-      .populate('owner')
+      .populate('owner', 'username')
       .sort({ createdAt: 'desc' })
     res.status(200).json(movies)
   } catch (error) {

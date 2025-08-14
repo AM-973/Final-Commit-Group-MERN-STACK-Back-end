@@ -57,6 +57,22 @@ const movieSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    posterUrl: {
+      type: String,
+      required: true,
+    },
+    year: {
+      type: String,
+      required: true,
+    },
+    imdbRating: {
+      type: String,
+      required: true,
+    },
+    imdbID: {
+      type: String,
+      required: true,
+    },
     creationdate: {
       type: Date,
       default: Date.now,
