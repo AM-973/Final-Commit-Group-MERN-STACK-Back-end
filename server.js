@@ -40,7 +40,7 @@ app.use('/movies', moviesRouter)
 
 
 
-app.listen(PORT, () => {
+app.listen(3000, () => {
 	console.log(`The express app is ready on port 3000`)
 })
 
